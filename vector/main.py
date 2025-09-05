@@ -339,6 +339,7 @@ async def upload_json(
 class QueryInput(BaseModel):
     query: str
     machine: str
+    chapters: str
     
 class Matches(BaseModel):
     query: str

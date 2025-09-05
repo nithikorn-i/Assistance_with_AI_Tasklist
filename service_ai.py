@@ -20,6 +20,10 @@ user_query = "อะไรคือสัตว์ทีมีขาเยอะ
 class ResponseJson(BaseModel):
         question: str
         answer: str
+        
+class ResponseIntentJson(BaseModel):
+        corrected_query: str
+        related_chapters: List[str]
 
 # function สำหรับทำ final prompt
 def makeFinalPrompt(persona, history, user_query, top_n_content):
@@ -53,22 +57,52 @@ def makeFinalPrompt(persona, history, user_query, top_n_content):
     
     print("Prompt : ", final_prompt)
     
-    return chatWithAI(final_prompt, "gemini-2.5-pro", False, user_query)
+    return chatWithAI(final_prompt, "gemini-2.5-flash", False, user_query)
 
 # function สำหรับทำ final prompt
-def makeIntentPrompt(user_query):
-    formatted_content = ""
+def makeIntentPrompt(user_query: str) -> ResponseIntentJson: 
+    # โหลด knowledge base
+    with open("knowledge_base.json", "r", encoding="utf-8") as f:
+        knowledge_base = json.load(f)
+    
+    # สร้าง prompt
+    prompt = f"""
+You are an assistant that analyzes a query against a knowledge base.
 
-    final_prompt = f"""
+1. Correct spelling or grammar mistakes in the query.
+2. Identify the most relevant chapter(s) from the provided knowledge base.
+3. Return the result strictly as a JSON string with this format:
+{{
+  "corrected_query": "...",
+  "related_chapters": ["chapter1", "chapter2", ...]
+}}
 
-    Current Question:
-    {user_query}
+Knowledge base:
+{json.dumps(knowledge_base, indent=2)}
+
+User query:
+{user_query}
+"""
+
+    # เรียก Gemini API
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
     
-    """
+    raw_text = response.text
+
+    print("response : ", raw_text)
     
-    # print("Prompt : ", final_prompt)
-    
-    return chatWithAI(final_prompt, "gemini-2.5-flash-lite", False, user_query)
+    clean_text = raw_text.strip().lstrip("```json").rstrip("```").strip()
+
+    # แปลง string JSON เป็น dict
+    response_dict = json.loads(clean_text)
+
+    # แปลงเป็น BaseModel
+    responseIntentJson = ResponseIntentJson(**response_dict)
+
+    return responseIntentJson
 
 
 # ฟังก์ชันสำหรับ รับคำตอบจาก AI มาแสดงผล
