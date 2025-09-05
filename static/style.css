@@ -383,6 +383,20 @@ body {
     padding-left: 20px;
     list-style: none;
     margin-top: 0.5rem;
+
+    max-height: 300px;      /* กำหนดความสูงสูงสุดที่อยากให้แสดง */
+    overflow-y: auto; 
+}
+.history-submenu::-webkit-scrollbar {
+    width: 6px;
+}
+.history-submenu::-webkit-scrollbar-track {
+    background: var(--gray-light);
+    border-radius: 10px;
+}
+.history-submenu::-webkit-scrollbar-thumb {
+    background-color: var(--gray-medium);
+    border-radius: 10px;
 }
 .history-submenu li {
     display: flex;                 
@@ -476,4 +490,32 @@ history-submenu li span {
     .input-area {
         padding: 12px 15px;
     }
+}
+
+.dropdown-icon {
+  margin-left: auto;
+  font-size: 0.8rem;
+  transition: transform 0.25s ease;
+  transform: rotate(270deg); /* ชี้ไปทางขวาเป็นค่าเริ่มต้น */
+}
+
+.history-dropdown.open .dropdown-icon {
+  transform: rotate(0deg); /* หมุนลงเมื่อเมนูเปิด */
+}
+
+#loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+#chat-viewer {
+  position: relative;
 }

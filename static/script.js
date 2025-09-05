@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const newChatBtn = document.getElementById('new-chat-btn');
   const historyDropdownToggle = document.querySelector('.history-dropdown > a');
   const menuToggle = document.querySelector('.menu-toggle');
+  const historyDropdown = document.querySelector(".history-dropdown > a");
   const luxurySidebar = document.querySelector('.luxury-sidebar');
   menuToggle.addEventListener('click', () => {
   luxurySidebar.classList.toggle('mobile-show');
@@ -26,32 +27,44 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  async function initializeApp() {
-    try {
-      console.log("🚀 กำลังเริ่มต้นระบบ...");
-      disableInput(true);
-      await loadAllChatHistories();
-      const hasHistory = document.querySelectorAll('#history-menu li').length > 0;
-      if (hasHistory) {
-        const latestChatId = document.querySelector('#history-menu li').dataset.chatid;
-        currentChatId = latestChatId;
-        await loadChat(latestChatId);
-      } else {
-        await startNewChat();
-      }
-      historyDropdownToggle.addEventListener('click', (e) => {
+async function initializeApp() {
+  try {
+    console.log("🚀 กำลังเริ่มต้นระบบ...");
+    disableInput(true);
+
+    // โหลดประวัติทั้งหมด
+    await loadAllChatHistories();
+
+    // เลือกประวัติล่าสุด ถ้ามี
+    const historyItems = document.querySelectorAll('#history-menu li');
+    if (historyItems.length > 0) {
+      const latestChatId = historyItems[0].dataset.chatid;
+      currentChatId = latestChatId;
+      await loadChat(latestChatId);
+    } else {
+      await startNewChat();
+    }
+
+    // ตั้งค่า toggle เมนูประวัติ + หมุนไอคอน
+    const historyDropdown = document.querySelector('.history-dropdown');
+    const historyMenu = document.getElementById('history-menu');
+    const dropdownIcon = historyDropdown.querySelector('.dropdown-icon');
+
+    historyDropdown.querySelector('a').addEventListener('click', (e) => {
       e.preventDefault();
       historyMenu.classList.toggle('show');
-      });
-      
-      console.log("✅ เริ่มต้นระบบเสร็จสิ้น");
-    } catch (error) {
-      console.error("❌ ข้อผิดพลาดในการเริ่มต้นระบบ:", error);
-      showError("ระบบเริ่มต้นไม่สำเร็จ: " + error.message);
-    } finally {
-      disableInput(false);
-    }
+      historyDropdown.classList.toggle('open'); // หมุนไอคอน
+    });
+
+    console.log("✅ เริ่มต้นระบบเสร็จสิ้น");
+  } catch (error) {
+    console.error("❌ ข้อผิดพลาดในการเริ่มต้นระบบ:", error);
+    showError("ระบบเริ่มต้นไม่สำเร็จ: " + error.message);
+  } finally {
+    disableInput(false);
   }
+}
+
 
 async function loadAllChatHistories() {
   try {
@@ -106,13 +119,14 @@ async function loadAllChatHistories() {
         deleteBtn.addEventListener('click', async (e) => {
           e.stopPropagation(); // ป้องกันไม่ให้โหลดแชท
           if (confirm('คุณแน่ใจว่าจะลบแชทนี้?')) {
+            await setLoading(true);
             await deleteChat(chat.chatId);
             await loadAllChatHistories();
-            clearChat();
+            await clearChat();
+            setLoading(false);
           }
         });
 
-        // 🧱 ประกอบ li
         li.appendChild(span);
         li.appendChild(deleteBtn);
         historyMenu.appendChild(li);
@@ -328,17 +342,32 @@ function addMessage(text, sender) {
   }
 
 function setLoading(isLoading) {
+  let overlay = document.getElementById("loading-overlay");
+
   if (isLoading) {
-    chatViewer.innerHTML = `
-      <div class="loading-container">
-        <i class="fa fa-spinner fa-spin fa-2x"></i>
-        <div>Processing...</div>
-      </div>
-    `;
+    // ถ้ายังไม่มี overlay ให้สร้างขึ้นมา
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "loading-overlay";
+      overlay.innerHTML = `
+        <div class="loading-container">
+          <i class="fa fa-spinner fa-spin fa-2x"></i>
+          <div>Processing...</div>
+        </div>
+      `;
+      chatViewer.appendChild(overlay);
+    }
+    overlay.style.display = "flex";
   } else {
-    // ไม่ลบเนื้อหาอื่นอีก ถ้าโหลดเสร็จ ให้ปล่อยให้โค้ดอื่นจัดการ
+    if (overlay) overlay.style.display = "none";
   }
 }
+
+// historyDropdown.querySelector("a").addEventListener("click", (e) => {
+//   e.preventDefault();                   // ป้องกัน link default
+//   historyMenu.classList.toggle("show"); // แสดง/ซ่อนเมนู
+//   historyDropdown.classList.toggle("open"); // toggle class เพื่อหมุนไอคอน
+// });
 
   sendButton.addEventListener('click', sendMessage);
   userInput.addEventListener('keypress', (e) => {
