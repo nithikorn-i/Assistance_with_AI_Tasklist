@@ -14,20 +14,22 @@ app = FastAPI()
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 
-# --- 1. Weaviate Connection ---
+# --- 1. ตั้งค่าการเชื่อมต่อกับ Weaviate ---
+# ระบุ URL ของ Weaviate server ที่คุณติดตั้งไว้ (จากข้อมูลที่ให้มา)
 WEAVIATE_URL = "http://34.63.29.212:8080"
+# สร้าง client เพื่อใช้สื่อสารกับ Weaviate
 client = weaviate.Client(url=WEAVIATE_URL)
 
-# --- 2.Config Weaviate Schema ---
+# --- 2. กำหนดและสร้าง Schema ใน Weaviate ---
 
-# Config Class (เปรียบเสมือนชื่อ Table ใน SQL)
-CLASS_NAME = "UploadManual2"
+# กำหนดชื่อ Class (เปรียบเสมือนชื่อ Table ใน SQL) ที่จะใช้เก็บข้อมูล
+CLASS_NAME = "UploadManual"
+# print(f" ลบ Class '{CLASS_NAME} แล้ว'")
 # client.schema.delete_class(CLASS_NAME)
-print(f"คลาส {CLASS_NAME}'")
 
 
 
-#-----START TEST WEAVIATE -----# --ignore
+#-----START TEST WEAVIATE -----# 
 
 # # ตรวจสอบก่อนว่า Class นี้มีอยู่แล้วใน Weaviate หรือยัง
 # client.schema.delete_class("Manual4")
@@ -167,9 +169,9 @@ def list_chapters(
         res = (
             client.query
                   .get(cls, ["chapter"])
-                  .with_limit(page_size)
-                  .with_offset(offset)
-                  .do()
+                .with_limit(page_size)
+                .with_offset(offset)
+                .do()
         )
         rows = res.get("data", {}).get("Get", {}).get(cls, []) or []
 
@@ -283,33 +285,32 @@ def list_section(
         "count": len(machine),
         "chapters": machine
     }
-    
 
-# ========= Helper: สร้างสคีมาสำหรับคลาสอัปโหลด =========
+# ========= Helper: สร้างสคีมาสำหรับคลาสอัปโหลด (ใช้ nearText) =========
 def make_upload_schema(class_name: str):
     return {
         "class": class_name,
         "vectorizer": "text2vec-transformers",
         "moduleConfig": {
             "text2vec-transformers": {
-                "poolingStrategy": "masked_mean",
-                "vectorizeClassName": False
+                "model": "sentence-transformers/sentence-transformers-all-MiniLM-L6-v2",
+                "skip": False,
+                "useCache": True,
+                "useGPU": False
             }
         },
         "properties": [
-            {"name": "content", "dataType": ["text"], "description": "Main instruction content"},
-            {"name": "chapter", "dataType": ["text"], "moduleConfig": {"text2vec-transformers": {"skip": True}}},
-            {"name": "section", "dataType": ["text"], "moduleConfig": {"text2vec-transformers": {"skip": True}}},
-            {"name": "machine", "dataType": ["text"], "moduleConfig": {"text2vec-transformers": {"skip": True}}},
-            {"name": "sub_section", "dataType": ["text"], "moduleConfig": {"text2vec-transformers": {"skip": True}}},
-            {"name": "sub_sub_section", "dataType": ["text"], "moduleConfig": {"text2vec-transformers": {"skip": True}}},
-            {"name": "img", "dataType": ["text"], "moduleConfig": {"text2vec-transformers": {"skip": True}}},
-            {"name": "img2", "dataType": ["text"], "moduleConfig": {"text2vec-transformers": {"skip": True}}},
-            {"name": "seq", "dataType": ["text"], "moduleConfig": {"text2vec-transformers": {"skip": True}}},
+            {"name": "content", "dataType": ["text"]},
+            {"name": "chapter", "dataType": ["text"]},
+            {"name": "section", "dataType": ["text"]},
+            {"name": "sub_section", "dataType": ["text"]},
+            {"name": "sub_sub_section", "dataType": ["text"]},
+            {"name": "img", "dataType": ["text"]},
+            {"name": "img2", "dataType": ["text"]},
+            {"name": "seq", "dataType": ["text"]}
         ]
     }
 
-# ========= Helper: ให้แน่ใจว่า schema ถูกต้อง =========
 def ensure_schema(class_name: str, force_recreate: bool = False):
     """
     - ถ้าไม่มีคลาส → สร้างใหม่ด้วย text2vec-transformers
@@ -337,8 +338,6 @@ def ensure_schema(class_name: str, force_recreate: bool = False):
         print(f"[schema] created class '{class_name}' with text2vec-transformers")
     else:
         print(f"[schema] '{class_name}' OK (vectorizer=text2vec-transformers)")
-
-# ========= Endpoint: Create Schema Helper=========
 
 
 # Upload file metadata
@@ -375,7 +374,6 @@ async def upload_json(
     if not all_items:
         raise HTTPException(status_code=400, detail="ไม่พบรายการข้อมูลใด ๆ ในไฟล์ที่อัปโหลด")
 
-    # 3) Batch index ปล่อยให้ Weaviate vectorize เอง
     client.batch.configure(batch_size=100, dynamic=True, timeout_retries=3)
     print(f"[upload-json] start batch indexing, total items={len(all_items)}")
 
@@ -396,7 +394,6 @@ async def upload_json(
                 "chapter": metadata.get("chapter"),
                 "section": metadata.get("section"),
                 "sub_section": metadata.get("sub_section"),
-                "machine":metadata.get("machine"),
                 "sub_sub_section": metadata.get("sub_sub_section"),
                 "img": metadata.get("img"),
                 "img2": metadata.get("img2"),
@@ -418,23 +415,21 @@ async def upload_json(
         "class_name": CLASS_NAME
     }
 
-
-# request body
 class QueryInput(BaseModel):
     query: str
-    machine: Optional[str] = None
+    machine: str
     
 class Matches(BaseModel):
     query: str
     top_matches: list[Any]
 
-# สร้าง endpoint
-@app.post("/search")
 def search(input: QueryInput):
     # Top N
     k = 10
+    candidate_k = 25
 
-    if not input.query or not input.query.strip():
+    # Change from input.query to input['query']
+    if not input['query'] or not input['query'].strip():
         raise HTTPException(status_code=400, detail="query must not be empty")
 
     if not client.schema.exists(CLASS_NAME):
@@ -443,29 +438,23 @@ def search(input: QueryInput):
     # semantic search
     # ส่งข้อความคำค้น (query)
     nearText = {
-        "concepts": [input.query]
+        "concepts": [input['query']],
+        "distance": 0.7
     }
 
     # สร้างคำสั่ง Query ไปยัง Weaviate
     result = (
-        client.query
-        .get(CLASS_NAME, ["content", "chapter", "section", "sub_section", "machine", "sub_sub_section", "img", "img2", "seq"])
-        .with_near_text(nearText)                 
-        .with_limit(k)                             
-        .with_additional(['certainty', 'distance']) 
+    client.query
+    .get(CLASS_NAME, ["content", "chapter", "section", "sub_section", "sub_sub_section", "img", "img2", "seq"])
+    .with_hybrid(query=input['query'], alpha=0.85)
+    .with_near_text(nearText)
+    .with_additional(["certainty"])
+    .with_limit(candidate_k)
     )
-
-    ch = (input.machine or "").strip()
-    if ch:
-        result = result.with_where({
-            "path": ["machine"],
-            "operator": "Equal",
-            "valueText": ch
-        })
 
     result = result.do()
     print("Weaviate response keys:", list(result.keys()))
-    
+
     if 'errors' in result:
         print("Weaviate errors:", json.dumps(result['errors'], ensure_ascii=False, indent=2))
         msgs = [str(er.get('message') or er) for er in result.get('errors', [])]
@@ -474,8 +463,16 @@ def search(input: QueryInput):
     # ผลลัพธ์ที่ได้จะอยู่ในรูปแบบ JSON, เราต้องดึงส่วนที่ต้องการออกมา
     top_matches = result['data']['Get'][CLASS_NAME]
 
+    top_matches_sorted = sorted(
+        top_matches, 
+        key=lambda x: float(x['_additional'].get('certainty', 0)), 
+        reverse=True
+    )[:k]
+
+
     # ส่งคืนผลลัพธ์ในรูปแบบ JSON
-    return Matches(query=input["query"], top_matches=top_matches)
+    # This line already uses the get() method, which works for dictionaries
+    return Matches(query=input.get("query"), top_matches=top_matches_sorted)
 
 if __name__ == "__main__":
     import uvicorn
