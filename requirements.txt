@@ -1,0 +1,16 @@
+fastapi==0.110.0
+uvicorn==0.35.0
+weaviate-client==3.26.7
+sentence-transformers==5.1.0
+language_tool_python==2.9.4
+thaispellcheck==0.2
+pythainlp==5.1.2
+scikit-learn==1.7.1
+pandas==2.3.1
+numpy==2.3.2
+regex==2025.7.34
+python-multipart==0.0.20
+requests==2.32.4
+pydantic==2.11.7
+starlette==0.36.3
+google-genai==1.30.0

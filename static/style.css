@@ -1,0 +1,479 @@
+:root {
+    /* โทนสีขาว-ฟ้า-เทา */
+    --primary-bg: #ffffff;
+    --secondary-bg: #f5f7fa;
+    --accent-blue: #2196f3;
+    --dark-blue: #1976d2;
+    --gray-dark: #455a64;
+    --gray-medium: #90a4ae;
+    --gray-light: #cfd8dc;
+    
+    /* สีข้อความ */
+    --text-dark: #263238;
+    --text-medium: #546e7a;
+    --text-light: #ffffff;
+    
+    /* ขนาดและระยะห่าง */
+    --border-radius: 8px;
+    --transition: all 0.25s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Noto Sans Thai', 'Montserrat', sans-serif;
+    background-color: #eceff1;
+    color: var(--text-dark);
+}
+
+.luxury-app {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* แถบเมนูด้านข้าง */
+.luxury-sidebar {
+    width: 280px;
+    background-color: var(--primary-bg);
+    color: var(--text-dark);
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--gray-light);
+    transition: var(--transition);
+    position: relative;
+    z-index: 10;
+}
+
+.brand {
+    padding: 25px;
+    border-bottom: 1px solid var(--gray-light);
+    text-align: center;
+}
+
+.logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    margin: 0 auto 15px;
+}
+
+.logo img {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.brand h1 {
+    font-weight: 600;
+    font-size: 22px;
+    margin-bottom: 5px;
+}
+
+.brand h1 span {
+    color: var(--accent-blue);
+    font-weight: 700;
+}
+
+.tagline {
+    font-size: 12px;
+    color: var(--text-medium);
+    letter-spacing: 0.5px;
+}
+
+.main-menu {
+    padding: 20px;
+    flex: 1;
+}
+
+.main-menu ul {
+    list-style: none;
+}
+
+.main-menu li {
+    margin-bottom: 4px;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.main-menu li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: var(--text-dark);
+    text-decoration: none;
+    font-size: 15px;
+}
+
+.main-menu li i {
+    width: 24px;
+    text-align: center;
+    font-size: 16px;
+    color: var(--gray-dark);
+}
+
+.main-menu li.active {
+    background-color: rgba(33, 150, 243, 0.1);
+}
+
+.main-menu li.active a,
+.main-menu li.active i {
+    color: var(--accent-blue);
+}
+
+.main-menu li:hover:not(.active) {
+    background-color: rgba(207, 216, 220, 0.3);
+}
+
+/* ส่วนหลัก */
+.luxury-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--secondary-bg);
+    overflow: hidden;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+    background-color: var(--primary-bg);
+    border-bottom: 1px solid var(--gray-light);
+    height: 72px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    color: var(--accent-blue);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.model-selector {
+    position: relative;
+}
+
+.model-selector select {
+    width: 200px;
+    padding: 10px 15px;
+    padding-right: 35px;
+    background-color: var(--primary-bg);
+    color: var(--text-dark);
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    appearance: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.model-selector select:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+.model-selector i {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-medium);
+    font-size: 12px;
+    pointer-events: none;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-status {
+    font-size: 12px;
+    color: var(--text-medium);
+    position: relative;
+    padding-right: 15px;
+}
+
+.user-status::before {
+    content: '';
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: #4caf50;
+    border-radius: 50%;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    background-color: var(--accent-blue);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.username {
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.chat-container {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+    background-color: var(--secondary-bg);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.message {
+    max-width: 75%;
+}
+
+.message-content {
+    padding: 15px;
+    border-radius: var(--border-radius);
+    background-color: var(--primary-bg);
+    border: 1px solid var(--gray-light);
+}
+
+.user-message {
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.ai-message {
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.sender {
+    font-weight: 600;
+}
+
+.ai-message .sender {
+    color: var(--accent-blue);
+}
+
+.time {
+    color: var(--gray-medium);
+    font-size: 12px;
+}
+
+.message p {
+    line-height: 1.5;
+    font-size: 15px;
+}
+
+.input-area {
+    padding: 15px 25px;
+    background-color: var(--primary-bg);
+    border-top: 1px solid var(--gray-light);
+}
+
+.input-box {
+    display: flex;
+    gap: 12px;
+}
+
+#user-input {
+    flex: 1;
+    padding: 12px 15px;
+    background-color: var(--primary-bg);
+    border: 1px solid var(--gray-light);
+    border-radius: var(--border-radius);
+    color: var(--text-dark);
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-size: 15px;
+}
+
+#user-input:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+#user-input::placeholder {
+    color: var(--gray-medium);
+}
+
+#send-button {
+    width: 48px;
+    height: 48px;
+    background-color: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#send-button i {
+    font-size: 18px;
+}
+
+/* Custom Scrollbar */
+.chat-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+    background: var(--gray-light);
+    border-radius: 10px;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+    background-color: var(--gray-medium);
+    border-radius: 10px;
+}
+
+/* Dropdown เมนูประวัติ */
+.history-dropdown {
+    position: relative;
+}
+.history-submenu {
+    display: none;
+    flex-direction: column;
+    padding-left: 20px;
+    list-style: none;
+    margin-top: 0.5rem;
+}
+.history-submenu li {
+    display: flex;                 
+    justify-content: space-between; 
+    align-items: center;           
+    padding: 6px 0;
+    color: #777777;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+.history-submenu.show {
+    display: flex;
+}
+
+history-submenu li span {
+    color: var(--text-dark);
+    transition: color 0.2s ease;
+}
+
+.history-submenu li span.active {
+    color: var(--accent-blue);
+    font-weight: 600;
+}
+
+.history-submenu li:hover {
+    background-color: rgba(207, 216, 220, 0.3);
+    border-radius: 6px;
+}
+
+.dropdown-icon {
+    margin-left: auto;
+    font-size: 0.8rem;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 20px;
+  color: #777;
+  font-size: 16px;
+  text-align: center;
+}
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .luxury-sidebar {
+        position: fixed;
+        left: -280px;
+        top: 0;
+        bottom: 0;
+        z-index: 100;
+    }
+    
+    .luxury-sidebar.mobile-show {
+        left: 0;
+    }
+    
+    .menu-toggle {
+        display: block;
+    }
+    
+    .chat-header {
+        padding: 0 15px;
+    }
+    
+    .model-selector select {
+        width: 160px;
+        font-size: 13px;
+    }
+    
+    .user-status {
+        display: none;
+    }
+    
+    .username {
+        display: none;
+    }
+    
+    .chat-container {
+        padding: 15px;
+    }
+    
+    .message {
+        max-width: 85%;
+    }
+    
+    .input-area {
+        padding: 12px 15px;
+    }
+}
