@@ -12,7 +12,7 @@ import json
 from typing import Any, Dict, List, Optional
 from collections import defaultdict
 
-from service_ai import ResponseJson, makeFinalPrompt
+from service_ai import ResponseIntentJson, ResponseJson, makeFinalPrompt, makeIntentPrompt
 from vector.main import Matches, QueryInput, make_upload_schema, search
 from normalization.spellCheck import spell_Check
 
@@ -125,11 +125,23 @@ async def chat(input: ChatInput):
     try:
         timestamp = datetime.now(UTC).isoformat().replace("+00:00", "Z")
         # vector = model.encode(input.message).tolist()
-
+        
+        # dataIntent: ResponseIntentJson = makeIntentPrompt(input.message)
+        
+        # print("related_chapters : ", dataIntent.related_chapters)
+        
+        # dataQuery: QueryInput = {
+        #     # Normalization query
+        #     "query": dataIntent.corrected_query,
+        #     "machine": 'YRM',
+        #     "chapters": dataIntent.related_chapters
+        # }
+        
         dataQuery: QueryInput = {
             # Normalization query
             "query": input.message if input.message == '' else spell_Check(input.message),
             "machine": 'YRM'
+
         }
 
         data_matche: Matches = search(dataQuery)
@@ -364,6 +376,10 @@ async def get_toc(file: UploadFile = File(...)):
     # สร้างสารบัญ
     toc = build_toc(data)
     return toc
+
+@app.post("/test_intent")
+async def get_intent(query: str):
+    return makeIntentPrompt(query)
     
 if __name__ == "__main__":
     import uvicorn

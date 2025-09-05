@@ -1,0 +1,122 @@
+[
+  {
+    "chapter": "|Safety Instructions",
+    "sections": [
+      "1|CE Marking",
+      "2|Warning Labels",
+      "3|Label Positions",
+      "4|Safety",
+      "5|Safety Message in This Manual"
+    ]
+  },
+  {
+    "chapter": "|About This Manual",
+    "sections": [
+      "1|Using This Manual"
+    ]
+  },
+  {
+    "chapter": "1|Unit Names and Functions",
+    "sections": [
+      "1|machine Main Unit",
+      "2|Operation and Data Input Unit",
+      "3|Head Unit",
+      "4|Component Supply Section",
+      "5|Conveyor",
+      "6|Recognition Unit",
+      "7|Axis Configuration",
+      "8|Other Options"
+    ]
+  },
+  {
+    "chapter": "Chapter 1 Unit Names and Functions",
+    "sections": [
+      "4. Component Supply Section"
+    ]
+  },
+  {
+    "chapter": "2|Basic Operation",
+    "sections": [
+      "1|Before Operation",
+      "2|Operation Screen and Buttons",
+      "3|Displaying Production Monitors (“Monitor” Screen)",
+      "4|Preparing Component Tape"
+    ]
+  },
+  {
+    "chapter": "Chapter 2 Basic Operation",
+    "sections": [
+      "1. Before Operation"
+    ]
+  },
+  {
+    "chapter": "3|Flow from machine Startup to End of Production",
+    "sections": [
+      "1|Flowchart from machine Startup to End of Production"
+    ]
+  },
+  {
+    "chapter": "|Appendix",
+    "sections": [
+      "1|Specifications",
+      "2|User Support",
+      "3|Maintenance Parts",
+      "|Index"
+    ]
+  },
+  {
+    "chapter": "|Introduction",
+    "sections": [
+      "1|About This Manual",
+      "2|Contents of Each Chapter",
+      "3|Maintenance List"
+    ]
+  },
+  {
+    "chapter": "1|Maintenance",
+    "sections": [
+      "1|Maintaining machine Performance",
+      "2|Preparing for Maintenance Tasks"
+    ]
+  },
+  {
+    "chapter": "2|Daily Maintenance Items",
+    "sections": [
+      "1|Checking Nozzle Conditions",
+      "2|Inspecting Nozzle Station",
+      "3|Cleaning Feeder Plate and Related",
+      "4|Checking Tape Cutter Sharpness",
+      "|Before Maintenance Work"
+    ]
+  },
+  {
+    "chapter": "3|Periodic Maintenance Items",
+    "sections": [
+      "1|Weekly Maintenance",
+      "2|Monthly Maintenance",
+      "3|Three-Month Maintenance",
+      "4|Six-Month Maintenance",
+      "5|One-Year Maintenance",
+      "6|Two-Year Maintenance",
+      "7|Three-Year Maintenance",
+      "8|Others"
+    ]
+  },
+  {
+    "chapter": "4|Lubrication Points List",
+    "sections": [
+      "1|Preparing to Lubricate",
+      "2|Lubrication Points and Schedule"
+    ]
+  },
+  {
+    "chapter": "5|How to Replace Consumable and Maintenance Parts",
+    "sections": [
+      "1|Nozzles",
+      "2|Nozzle Leaf Springs and Roller Lock",
+      "3|Conveyor Unit",
+      "4|Base Unit",
+      "5|Cover"
+    ]
+  }
+]
