@@ -198,6 +198,94 @@ def list_chapters(
         "chapters": chapters
     }
 
+@app.get("/section")
+def list_section(
+    target_class: Optional[str] = None,
+    page_size: int = 500,
+    max_pages: int = 200,
+    q: Optional[str] = None
+):
+    cls = target_class or CLASS_NAME
+    uniq = set()
+    offset = 0
+
+    while True:
+        res = (
+            client.query
+                  .get(cls, ["section"])
+                  .with_limit(page_size)
+                  .with_offset(offset)
+                  .do()
+        )
+        rows = res.get("data", {}).get("Get", {}).get(cls, []) or []
+
+        for r in rows:
+            sections = r.get("section")
+            if sections is not None:
+                s = str(sections).strip()
+                if s:
+                    uniq.add(s)
+
+        if len(rows) < page_size or (offset // page_size) + 1 >= max_pages:
+            break
+        offset += page_size
+
+    section = sorted(uniq, key=lambda x: x.lower())
+
+    if q:
+        ql = q.lower()
+        section = [c for c in section if ql in c.lower()]
+
+    return {
+        "class": cls,
+        "count": len(section),
+        "chapters": section
+    }
+
+@app.get("/machine")
+def list_section(
+    target_class: Optional[str] = None,
+    page_size: int = 500,
+    max_pages: int = 200,
+    q: Optional[str] = None
+):
+    cls = target_class or CLASS_NAME
+    uniq = set()
+    offset = 0
+
+    while True:
+        res = (
+            client.query
+                  .get(cls, ["machine"])
+                  .with_limit(page_size)
+                  .with_offset(offset)
+                  .do()
+        )
+        rows = res.get("data", {}).get("Get", {}).get(cls, []) or []
+
+        for r in rows:
+            machines = r.get("machine")
+            if machines is not None:
+                s = str(machines).strip()
+                if s:
+                    uniq.add(s)
+
+        if len(rows) < page_size or (offset // page_size) + 1 >= max_pages:
+            break
+        offset += page_size
+
+    machine = sorted(uniq, key=lambda x: x.lower())
+
+    if q:
+        ql = q.lower()
+        machine = [c for c in machine if ql in c.lower()]
+
+    return {
+        "class": cls,
+        "count": len(machine),
+        "chapters": machine
+    }
+
 # ========= Helper: สร้างสคีมาสำหรับคลาสอัปโหลด (ใช้ nearText) =========
 def make_upload_schema(class_name: str):
     return {
